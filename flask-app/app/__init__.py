@@ -1,15 +1,19 @@
+import logging
 from flask import Flask
+from flask_appbuilder import AppBuilder, SQLA
 
-from flask_appbuilder.extensions import db
-from .extensions import appbuilder
+logging.basicConfig(format="%(asctime)s:%(levelname)s:%(name)s:%(message)s")
+logging.getLogger().setLevel(logging.DEBUG)
 
+app = Flask(__name__)
 
-def create_app() -> Flask:
-    app = Flask(__name__)
-    app.config.from_object("config")
-    with app.app_context():
-        appbuilder.init_app(app)
-        db.create_all()
-        # Registering the views and APIs
-        ...
-    return app
+# Configuración del entorno
+app.config["SECRET_KEY"] = "clave_secreta_instituto_2026"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instituto.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLA(app)
+appbuilder = AppBuilder(app, db.session)
+
+# Importación de las nuevas vistas académicas
+from . import views
